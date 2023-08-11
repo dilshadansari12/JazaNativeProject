@@ -1,7 +1,11 @@
 import * as React from "react";
-import { View, Text } from "react-native";
+import { View, Text, useColorScheme } from "react-native";
 import { QueryClient } from "react-query";
+import type { ColorSchemeName } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
+// rna
+import { createTheme, ThemeProvider, type Colors } from "@rneui/themed";
 
 // jazasoft
 import {
@@ -11,6 +15,9 @@ import {
   createDataProvider,
   createI18nProvider,
 } from "@jazasoft/react-native-admin";
+
+import { AppNavigationContainer, type Role } from "@jazasoft/rna-ui-elements";
+
 import type {
   AuthProvider,
   DataProvider,
@@ -18,7 +25,30 @@ import type {
   Translations,
 } from "@jazasoft/react-native-admin";
 
-import { type Role } from "@jazasoft/rna-ui-elements";
+//rna 
+import routeMap from "./navigation/RouteMap";
+import TabBarIcon from "./navigation/TabBatIcon";
+ 
+
+// rna
+
+const lightColors: Partial<Colors> = {
+  primary: "#1386f8",
+  background: "#D5DDE4",
+  white: "#FFFFFF",
+  black: "rgba(28, 27, 31, 1)",
+  //   card: "#FFFFFF",
+  //   text: "rgba(28, 27, 31, 1)",
+};
+const darkColors: Partial<Colors> = {
+  primary: "#1386f8",
+  background: "#1A2035",
+  white: "#333F68",
+  black: "rgba(230, 225, 229, 1)",
+  //   card: "#333F68",
+  //   text: "rgba(230, 225, 229, 1)",
+};
+
 
 // i18n translations
 import englishTranslationMessages from "./i18/en";
@@ -65,6 +95,8 @@ const defaultDataProvider: DataProvider = {
 };
 
 export default function SampleApp() {
+  // rna
+  const [colorScheme, setColorScheme] = React.useState<ColorSchemeName>(null);
   const [authProvider, setAuthProvider] =
     React.useState<AuthProvider>(defaultAuthProvider);
   const [dataProvider, setDataProvider] =
@@ -97,6 +129,42 @@ export default function SampleApp() {
     initAsync();
   }, []);
 
+  // rna
+  const defaultColorScheme = useColorScheme();
+
+  React.useEffect(() => {
+    const initAsync = async () => {
+      let cScheme = defaultColorScheme;
+      try {
+        let val = await AsyncStorage.getItem("Store.@color-scheme");
+        cScheme =
+          val === "dark"
+            ? "dark"
+            : val === "light"
+            ? "light"
+            : defaultColorScheme;
+      } catch (e) {
+        cScheme = "light";
+      }
+      setColorScheme(cScheme);
+    };
+    initAsync();
+  }, [defaultColorScheme, setColorScheme]);
+
+  const theme = createTheme({
+    lightColors,
+    darkColors,
+    mode: colorScheme === "dark" ? "dark" : "light",
+    // components: {
+    //   ListItem: (_, localTheme) => ({
+    //     containerStyle: {
+    //       backgroundColor: localTheme.colors.card,
+    //     },
+    //   }),
+    // },
+  });
+
+
   const version =
     Constants.expoConfig?.extra?.version || Constants.expoConfig?.version;
   const store = asyncStore(version.replace(/\\./g, "_"));
@@ -109,9 +177,22 @@ export default function SampleApp() {
       dataProvider={dataProvider} 
       queryClient={queryClient} 
     >
-      <View>
+      {/* <View style={{marginTop:10}}>
         <Text>Hello World!</Text>
-      </View>
+      </View> */}
+
+      {/* rna */}
+
+      <ThemeProvider key={colorScheme} theme={theme}>
+        <AppNavigationContainer
+          routeMap={routeMap}
+          roleList={roleList}
+          TabBarIcon={TabBarIcon}
+        //   AccountScreen={AccountScreen}
+        />
+      </ThemeProvider>
+
+
     </App>
   );
 }
