@@ -1,13 +1,10 @@
 import * as React from "react";
-import { View, Text, useColorScheme } from "react-native";
 import { QueryClient } from "react-query";
 import type { ColorSchemeName } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
-// rna
-import { createTheme, ThemeProvider, type Colors } from "@rneui/themed";
 
-// jazasoft
+// jazasoft admin
 import {
   App,
   asyncStore,
@@ -16,7 +13,6 @@ import {
   createI18nProvider,
 } from "@jazasoft/react-native-admin";
 
-import { AppNavigationContainer, type Role } from "@jazasoft/rna-ui-elements";
 
 import type {
   AuthProvider,
@@ -25,7 +21,11 @@ import type {
   Translations,
 } from "@jazasoft/react-native-admin";
 
-//rna 
+// rna
+import { View, Text, useColorScheme } from "react-native";
+import { createTheme, ThemeProvider, type Colors } from "@rneui/themed";
+import { AppNavigationContainer, type Role } from "@jazasoft/rna-ui-elements";
+
 import routeMap from "./navigation/RouteMap";
 import TabBarIcon from "./navigation/TabBatIcon";
  
